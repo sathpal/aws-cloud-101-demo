@@ -1,0 +1,485 @@
+<title>Where Does Instagram Live?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#0b1220;--bg2:#121b2d;--bg3:#050a14;--ink:#f2f5f9;--muted:#93a4b8;--line:#243350;
+    --accent:#ff9a1f;--accent-soft:#ffd08a;--ok:#34d399;--warn:#fb7185;
+    --display:"Bricolage Grotesque","IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .deck{position:fixed;inset:0}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:clamp(12px,2.4vh,26px);
+         padding:clamp(20px,5vh,56px) clamp(18px,6vw,96px) clamp(40px,7vh,64px);overflow:auto;box-sizing:border-box}
+  .slide.active{display:flex}
+  .eyebrow{font-family:var(--mono);font-size:clamp(11px,1.3vw,15px);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .eyebrow .clock{color:var(--muted);margin-left:1em}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6.4vw,88px);line-height:1.02;letter-spacing:-.02em;margin:0;text-wrap:balance}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,4.2vw,58px);line-height:1.08;letter-spacing:-.015em;margin:0;text-wrap:balance}
+  p,li{font-size:clamp(16px,2vw,27px);line-height:1.4;margin:0}
+  ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:.35em}
+  .lead{color:var(--muted);max-width:34ch}
+  .lead.wide{max-width:60ch}
+  .grid{display:grid;gap:clamp(10px,1.5vw,20px)}
+  .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  .tile{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:clamp(12px,1.6vw,22px);display:flex;flex-direction:column;gap:6px}
+  .tile b{font-family:var(--display);font-weight:700;font-size:clamp(17px,2.1vw,28px);line-height:1.15}
+  .tile p,.tile span{font-size:clamp(13px,1.45vw,19px);color:var(--muted);line-height:1.35}
+  .tile .code{font-family:var(--mono);color:var(--accent-soft);font-size:clamp(12px,1.3vw,17px)}
+  .tile.hot{border-color:var(--accent)}
+  .cmd{font-family:var(--mono);background:var(--bg3);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:8px;
+       padding:clamp(12px,1.8vw,22px) clamp(14px,2vw,26px);font-size:clamp(15px,2.3vw,31px);white-space:pre-wrap;word-break:break-word;line-height:1.35}
+  .cmd small{display:block;color:var(--muted);font-size:.6em;margin-top:.5em;font-family:var(--body)}
+  .demo .eyebrow{color:var(--ok)}
+  .demo .cmd{border-left-color:var(--ok)}
+  .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,10vw,150px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .big + p{color:var(--muted)}
+  table{border-collapse:collapse;width:100%;font-size:clamp(14px,1.8vw,24px)}
+  th,td{text-align:left;padding:.45em .7em;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:500;font-family:var(--mono);font-size:.8em;letter-spacing:.06em;text-transform:uppercase}
+  td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tbl{overflow-x:auto}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.4vw,18px);counter-reset:s}
+  .steps .tile{position:relative;padding-top:clamp(30px,3.6vw,46px)}
+  .steps .tile::before{counter-increment:s;content:counter(s);position:absolute;top:10px;left:14px;font-family:var(--mono);color:var(--accent);font-size:clamp(12px,1.3vw,16px)}
+  .row{display:flex;gap:clamp(10px,1.5vw,20px);flex-wrap:wrap;align-items:stretch}
+  .row>*{flex:1 1 240px}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(10px,2vw,28px);align-items:start}
+  .vs .mid{align-self:center;font-family:var(--display);font-weight:800;color:var(--muted);font-size:clamp(20px,3vw,40px)}
+  .vs h3{font-family:var(--display);margin:0 0 .4em;font-size:clamp(18px,2.4vw,32px)}
+  .vs ul li{font-size:clamp(14px,1.7vw,23px)}
+  .old h3{color:var(--warn)}.new h3{color:var(--ok)}
+  svg{max-width:100%;height:auto;display:block}
+  .svgbox{width:100%;max-width:1100px}
+  .foot{font-family:var(--mono);color:var(--muted);font-size:clamp(11px,1.2vw,14px)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:.7em;border:1px solid var(--line);border-radius:999px;padding:.15em .7em;color:var(--accent-soft);margin-left:.5em;vertical-align:middle}
+  .hud{position:fixed;right:16px;bottom:10px;font-family:var(--mono);font-size:12px;color:var(--muted);z-index:5;user-select:none}
+  .hud kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:8px}
+  .bar{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);width:0;z-index:5;transition:width .25s}
+  .notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(3,8,16,.94);border-top:1px solid var(--accent);
+         padding:14px clamp(18px,6vw,96px) 22px;font-size:15px;line-height:1.5;color:#dbe4ee;z-index:6;display:none}
+  .notes.on{display:block}
+  .notes .k{color:var(--accent);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-right:10px}
+  a{color:var(--accent-soft)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (max-width:760px){
+    .g2,.g3,.g4,.steps,.vs{grid-template-columns:1fr}.vs .mid{display:none}
+    .slide{justify-content:flex-start;padding-top:28px;padding-bottom:70px}
+    .hud kbd{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.bar{transition:none}}
+</style>
+
+<div class="deck" id="deck">
+
+<!-- ===================== HOOK ===================== -->
+<section class="slide">
+  <div class="eyebrow">Cloud 101 · SNIT Hyderabad · September 2026</div>
+  <h1>Where does Instagram live?</h1>
+  <p class="lead wide">A two-hour tour of cloud computing and AWS, with one live experiment: we will build a small piece of Instagram, run it from your phones, and delete it before you leave.</p>
+  <p class="foot">Sathpal · keys: → next · ← back · N notes · F fullscreen</p>
+  <aside class="notes">Open with the question, wait for answers ("on servers", "in California", "in the phone"). Every answer is partly right. Say the goal: by 2:30 pm you'll have watched a real backend get born, get busy, and get deleted.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">The hook</div>
+  <h2>You tap a reel. 300 milliseconds later it plays. What just happened?</h2>
+  <div class="steps">
+    <div class="tile"><b>Your phone asks a computer</b><p>somewhere within ~40 ms of Hyderabad, over the internet</p></div>
+    <div class="tile"><b>That computer asks a database</b><p>which of the 6 billion reels should this person see next?</p></div>
+    <div class="tile"><b>Storage streams the video</b><p>from a copy already parked near you, not from the creator's phone</p></div>
+    <div class="tile"><b>Someone gets a bill</b><p>for a few microseconds of compute and a few kilobytes of transfer</p></div>
+  </div>
+  <p class="lead wide">Nobody at Instagram bought a computer for you. They rented a slice of one, for one third of a second. That is cloud computing.</p>
+  <aside class="notes">Keep this to 3 minutes. The point is: computers you never see, rented by the millisecond. Everything today expands one of these four boxes.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Today</div>
+  <h2>Five things you were promised, in order</h2>
+  <div class="tbl"><table>
+    <tr><th>Clock</th><th>Topic</th><th>You leave with</th></tr>
+    <tr><td class="num">0:10</td><td>Introduction to cloud computing</td><td>A definition you can say in one breath</td></tr>
+    <tr><td class="num">0:35</td><td>Fundamentals and purpose of AWS</td><td>Eight services you recognise on sight</td></tr>
+    <tr><td class="num">1:05</td><td>Live demo <span class="pill">30 min</span></td><td>Your name stored in an AWS data centre in India</td></tr>
+    <tr><td class="num">1:35</td><td>Uses, benefits, real-world applications</td><td>Why Hotstar doesn't crash during the IPL final</td></tr>
+    <tr><td class="num">1:50</td><td>Opportunities and pathways for students</td><td>A 30-day plan and a free account</td></tr>
+  </table></div>
+  <aside class="notes">Tell them the QR will appear around 1:05. Phones allowed; in fact required.</aside>
+</section>
+
+<!-- ===================== 1. INTRO TO CLOUD ===================== -->
+<section class="slide">
+  <div class="eyebrow">1 · Introduction to cloud computing <span class="clock">0:10</span></div>
+  <h2>Computing you rent over the internet, on demand, and pay for by use.</h2>
+  <p class="lead wide">Servers, storage, databases, networking, and increasingly AI models. You don't own the hardware, you don't wait for delivery, and you stop paying the moment you stop using it.</p>
+  <p class="foot">NIST SP 800-145, translated into plain words</p>
+  <aside class="notes">Make them repeat the sentence. Everything else is detail on "rent", "on demand", "by use".</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">1 · Introduction to cloud computing</div>
+  <h2>A startup launches an app. 2005 versus today.</h2>
+  <div class="vs">
+    <div class="old"><h3>2005</h3><ul>
+      <li>Buy 4 servers at ₹4 lakh each. Wait 8 weeks.</li>
+      <li>Rent rack space, power, cooling, and a person to patch them.</li>
+      <li>Guess launch-day traffic. Guess low: the site dies. Guess high: money sleeps in a rack.</li>
+      <li>Want Mumbai and Singapore? Do it all twice.</li>
+    </ul></div>
+    <div class="mid">vs</div>
+    <div class="new"><h3>Today</h3><ul>
+      <li>One command. Server exists in 60 seconds.</li>
+      <li>Patching, power, cooling, hardware failures: the provider's problem.</li>
+      <li>Traffic doubles at 9 pm? Capacity doubles at 9 pm, and shrinks at 2 am.</li>
+      <li>Mumbai and Singapore is a drop-down menu.</li>
+    </ul></div>
+  </div>
+  <aside class="notes">The 8-week purchase order is the emotional core. Ask: how many of you would have launched a startup in 2005 with your own money?</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">1 · Introduction to cloud computing</div>
+  <h2>The five characteristics, and where you will see each one today</h2>
+  <div class="grid g3">
+    <div class="tile"><b>On-demand self-service</b><p>No sales call. You type a command.</p><span class="code">demo: ec2-demo.sh</span></div>
+    <div class="tile"><b>Broad network access</b><p>Any device, any network.</p><span class="code">demo: your phones</span></div>
+    <div class="tile"><b>Resource pooling</b><p>Thousands of customers share the same hardware safely.</p><span class="code">demo: the "servers created" counter</span></div>
+    <div class="tile"><b>Rapid elasticity</b><p>Capacity follows demand up and down.</p><span class="code">demo: 200 requests at once</span></div>
+    <div class="tile"><b>Measured service</b><p>Metered like electricity, billed per second or request.</p><span class="code">demo: today's bill, ₹0</span></div>
+    <div class="tile hot"><b>The test</b><p>If a "cloud" fails any of these five, it is a data centre with a nicer website.</p></div>
+  </div>
+  <aside class="notes">These five are the NIST list. Recruiters and the Cloud Practitioner exam both use them.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">1 · Introduction to cloud computing</div>
+  <h2>Service models, explained with pizza</h2>
+  <div class="grid g4">
+    <div class="tile"><b>On-premises</b><p>Grow the wheat, build the oven, make the pizza.</p><span class="code">your college server room</span></div>
+    <div class="tile"><b>IaaS</b><p>Rent a kitchen with an oven. You cook.</p><span class="code">EC2, S3, VPC</span></div>
+    <div class="tile"><b>PaaS</b><p>Base and oven provided. You add toppings.</p><span class="code">Lambda, RDS, DynamoDB</span></div>
+    <div class="tile"><b>SaaS</b><p>Pizza arrives at the door.</p><span class="code">Gmail, Canva, ChatGPT</span></div>
+  </div>
+  <p class="lead wide">Deployment models: public (AWS, Azure, Google Cloud), private (a bank's own cloud), hybrid (both, most large Indian enterprises), multi-cloud.</p>
+  <aside class="notes">Ask which model Instagram is for its users (SaaS) and for its engineers (mostly IaaS/PaaS). Both answers are correct and that's the insight.</aside>
+</section>
+
+<!-- ===================== 2. AWS FUNDAMENTALS ===================== -->
+<section class="slide">
+  <div class="eyebrow">2 · Fundamentals and purpose of AWS <span class="clock">0:35</span></div>
+  <h2>Amazon built infrastructure to survive its own festival peaks. Then it rented it out.</h2>
+  <div class="tbl"><table>
+    <tr><th>Year</th><th>What happened</th></tr>
+    <tr><td class="num">2006</td><td>S3 (storage, March) and EC2 (servers, August) launch. "Rent a computer by the hour" sounds absurd.</td></tr>
+    <tr><td class="num">2008–2012</td><td>Netflix, Airbnb, Dropbox grow up on AWS instead of buying servers.</td></tr>
+    <tr><td class="num">2014</td><td>Lambda: run code without any server at all.</td></tr>
+    <tr><td class="num">2016</td><td>Asia Pacific (Mumbai), <span class="code" style="font-family:var(--mono);color:var(--accent-soft)">ap-south-1</span>. Indian data can stay in India.</td></tr>
+    <tr><td class="num">2022</td><td>Asia Pacific (Hyderabad), <span style="font-family:var(--mono);color:var(--accent-soft)">ap-south-2</span>. A region in this city.</td></tr>
+    <tr><td class="num">2023 →</td><td>Bedrock: frontier AI models as an API, the same way you rent a server.</td></tr>
+  </table></div>
+  <aside class="notes">The purpose of AWS, in one line: turn every piece of IT into a utility you rent. Point out that the Hyderabad region is physically not far from where they sit.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">2 · Fundamentals and purpose of AWS</div>
+  <h2>Regions, availability zones, data centres</h2>
+  <div class="svgbox"><svg viewBox="0 0 1100 330" role="img" aria-label="A region contains three availability zones, each with data centres">
+    <rect x="10" y="10" width="1080" height="310" rx="16" fill="#121b2d" stroke="#243350" stroke-width="2"/>
+    <text x="34" y="46" fill="#ff9a1f" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="2">REGION  ap-south-1 · Mumbai</text>
+    <text x="1066" y="46" fill="#93a4b8" font-family="IBM Plex Sans, sans-serif" font-size="16" text-anchor="end">one of 30+ worldwide</text>
+    <g font-family="IBM Plex Sans, sans-serif">
+      <rect x="40" y="70" width="330" height="230" rx="12" fill="#0b1220" stroke="#34d399" stroke-width="2"/>
+      <text x="60" y="102" fill="#f2f5f9" font-size="20" font-weight="600">Availability Zone a</text>
+      <rect x="60" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="125" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <rect x="220" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="285" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <text x="60" y="240" fill="#93a4b8" font-size="15">own power, cooling, network</text>
+      <text x="60" y="266" fill="#93a4b8" font-size="15">kilometres from the others</text>
+      <rect x="385" y="70" width="330" height="230" rx="12" fill="#0b1220" stroke="#34d399" stroke-width="2"/>
+      <text x="405" y="102" fill="#f2f5f9" font-size="20" font-weight="600">Availability Zone b</text>
+      <rect x="405" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="470" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <rect x="565" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="630" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <text x="405" y="240" fill="#93a4b8" font-size="15">your DynamoDB row is copied</text>
+      <text x="405" y="266" fill="#93a4b8" font-size="15">to all three automatically</text>
+      <rect x="730" y="70" width="330" height="230" rx="12" fill="#0b1220" stroke="#34d399" stroke-width="2"/>
+      <text x="750" y="102" fill="#f2f5f9" font-size="20" font-weight="600">Availability Zone c</text>
+      <rect x="750" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="815" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <rect x="910" y="125" width="130" height="70" rx="8" fill="#243350"/><text x="975" y="166" fill="#f2f5f9" font-size="15" text-anchor="middle">data centre</text>
+      <text x="750" y="240" fill="#93a4b8" font-size="15">a flood in one zone</text>
+      <text x="750" y="266" fill="#93a4b8" font-size="15">does not take Hotstar down</text>
+    </g>
+  </svg></div>
+  <p class="lead wide">India has two regions: Mumbai (2016) and Hyderabad (2022). Choosing a region is choosing where your data physically sits, which laws apply, and how far the bits travel.</p>
+  <aside class="notes">Exact counts change; say "30-plus regions, 100-plus zones, check the AWS global infrastructure page". Multi-AZ is the answer to "what if AWS goes down".</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">2 · Fundamentals and purpose of AWS</div>
+  <h2>Eight services to recognise on sight</h2>
+  <div class="grid g4">
+    <div class="tile"><b>EC2</b><p>Virtual servers by the second</p><span class="code">"a computer"</span></div>
+    <div class="tile"><b>S3</b><p>Object storage, effectively unlimited</p><span class="code">"a hard disk for the internet"</span></div>
+    <div class="tile"><b>Lambda</b><p>Run a function only when something happens</p><span class="code">"code without a server"</span></div>
+    <div class="tile"><b>DynamoDB</b><p>Key-value database, millisecond reads at any scale</p><span class="code">"the NoSQL database"</span></div>
+    <div class="tile"><b>RDS</b><p>Managed MySQL / PostgreSQL</p><span class="code">"the SQL database"</span></div>
+    <div class="tile"><b>VPC</b><p>Your private network inside AWS</p><span class="code">"the walls"</span></div>
+    <div class="tile"><b>IAM</b><p>Who may do what</p><span class="code">"the keys"</span></div>
+    <div class="tile"><b>CloudWatch</b><p>Metrics, logs, alarms</p><span class="code">"the dashboard"</span></div>
+  </div>
+  <p class="lead wide">Plus one fast-growing family: Bedrock and SageMaker for AI. AWS has over 200 services. You need these eight to read any architecture diagram.</p>
+  <aside class="notes">We use six of these eight in the demo: EC2, S3, Lambda, DynamoDB, IAM, CloudWatch. VPC appears as the security group.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">2 · Fundamentals and purpose of AWS</div>
+  <h2>How you pay: like electricity, not like a laptop</h2>
+  <div class="tbl"><table>
+    <tr><th>Service</th><th>Unit</th><th>Mumbai list price (USD)</th><th>Free tier for learning</th></tr>
+    <tr><td>EC2 t3.micro</td><td>per second while running</td><td class="num">≈ $0.0116 / hour</td><td>credits for new accounts</td></tr>
+    <tr><td>Lambda</td><td>per request + per ms of memory</td><td class="num">$0.20 per 1,000,000 requests</td><td class="num">1M requests / month, always</td></tr>
+    <tr><td>S3</td><td>per GB stored per month</td><td class="num">≈ $0.025 / GB</td><td>credits for new accounts</td></tr>
+    <tr><td>DynamoDB on-demand</td><td>per million reads / writes</td><td class="num">≈ $1.42 / M writes</td><td class="num">25 GB stored, always</td></tr>
+  </table></div>
+  <p class="lead wide">Our whole session today, for the whole room, costs less than one samosa. The expensive mistakes are the forgotten server left running and the access key pasted into a public GitHub repo.</p>
+  <p class="foot">Prices are approximate list prices; AWS moved new accounts to a credit-based Free Tier in July 2025. Check aws.amazon.com/free for today's terms.</p>
+  <aside class="notes">Don't read the table. Point at Lambda: 20 cents per million requests. Then tell the leaked-key story: bots scan GitHub for keys within minutes and mine crypto on your card.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">2 · Fundamentals and purpose of AWS</div>
+  <h2>Shared responsibility: AWS guards the building, you guard the keys</h2>
+  <div class="vs">
+    <div class="new"><h3>AWS: security <em>of</em> the cloud</h3><ul>
+      <li>Physical data centres, guards, cameras</li><li>Hardware, networking, hypervisor</li><li>Managed service patching (DynamoDB, Lambda runtime)</li><li>Compliance certifications (ISO, SOC, RBI-relevant controls)</li>
+    </ul></div>
+    <div class="mid">+</div>
+    <div class="old"><h3>You: security <em>in</em> the cloud</h3><ul>
+      <li>Your IAM users, keys, and permissions</li><li>Which ports you open (we open only port 80 today)</li><li>Your data: encryption, backups, who can read it</li><li>Your code: an SQL injection is still yours</li>
+    </ul></div>
+  </div>
+  <aside class="notes">This is the most-asked exam question and the most common first-job incident. Segue: enough slides. Let's build.</aside>
+</section>
+
+<!-- ===================== DEMO ===================== -->
+<section class="slide demo">
+  <div class="eyebrow">Live demo <span class="clock">1:05 · 30 min</span></div>
+  <h2>Let's build a tiny piece of Instagram: a guestbook the whole room writes to</h2>
+  <div class="svgbox"><svg viewBox="0 0 1100 220" role="img" aria-label="Phone to S3 to Lambda to DynamoDB, with CloudWatch watching">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#93a4b8"/></marker></defs>
+    <g font-family="IBM Plex Sans, sans-serif" text-anchor="middle">
+      <rect x="20" y="60" width="200" height="100" rx="12" fill="#121b2d" stroke="#243350" stroke-width="2"/>
+      <text x="120" y="100" fill="#f2f5f9" font-size="22" font-weight="600">Your phone</text><text x="120" y="130" fill="#93a4b8" font-size="15">scans a QR</text>
+      <rect x="300" y="60" width="200" height="100" rx="12" fill="#121b2d" stroke="#ff9a1f" stroke-width="2"/>
+      <text x="400" y="100" fill="#f2f5f9" font-size="22" font-weight="600">Amazon S3</text><text x="400" y="130" fill="#93a4b8" font-size="15">serves index.html</text>
+      <rect x="580" y="60" width="200" height="100" rx="12" fill="#121b2d" stroke="#ff9a1f" stroke-width="2"/>
+      <text x="680" y="100" fill="#f2f5f9" font-size="22" font-weight="600">AWS Lambda</text><text x="680" y="130" fill="#93a4b8" font-size="15">80 lines of Python</text>
+      <rect x="860" y="60" width="220" height="100" rx="12" fill="#121b2d" stroke="#ff9a1f" stroke-width="2"/>
+      <text x="970" y="100" fill="#f2f5f9" font-size="22" font-weight="600">DynamoDB</text><text x="970" y="130" fill="#93a4b8" font-size="15">stores your entry, 3 copies</text>
+      <line x1="220" y1="110" x2="298" y2="110" stroke="#93a4b8" stroke-width="2" marker-end="url(#ar)"/>
+      <line x1="500" y1="110" x2="578" y2="110" stroke="#93a4b8" stroke-width="2" marker-end="url(#ar)"/>
+      <line x1="780" y1="110" x2="858" y2="110" stroke="#93a4b8" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="259" y="98" fill="#93a4b8" font-size="13">GET</text><text x="539" y="98" fill="#93a4b8" font-size="13">POST /api</text><text x="819" y="98" fill="#93a4b8" font-size="13">PutItem</text>
+      <rect x="440" y="180" width="480" height="30" rx="8" fill="#0b1220" stroke="#34d399" stroke-width="1.5"/>
+      <text x="680" y="200" fill="#34d399" font-size="14" font-family="IBM Plex Mono, monospace">CloudWatch watches every request · CloudFormation created all of it</text>
+    </g>
+  </svg></div>
+  <p class="lead wide">Four services, one YAML file, zero servers to log into. Same shape as a real product's backend, at one-millionth the traffic.</p>
+  <aside class="notes">Switch to the terminal now. Keep this slide visible on the second screen if you have one.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 1 of 6 · a computer in Mumbai</div>
+  <h2>Rent a server. Watch it wake up.</h2>
+  <div class="cmd">scripts/ec2-demo.sh<small>AMI = ready-made OS image · t3.micro = 2 vCPU, 1 GB · security group = firewall (port 80 only) · user-data = "what to do when you wake up"</small></div>
+  <p class="lead wide">While it boots: open the EC2 console, watch pending → running. When the page opens, read out the instance ID and the availability zone. Nobody bought that machine.</p>
+  <aside class="notes">~90 seconds. If they're engaged: scripts/ec2-demo.sh 3 for three more while you talk. Terminate everything at the end of the demo with scripts/ec2-cleanup.sh.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 2 of 6 · infrastructure as code</div>
+  <h2>Clicking is fine for one server. Teams write infrastructure down as a file.</h2>
+  <div class="cmd">scripts/deploy.sh<small>reads infra/guestbook.yaml → CloudFormation creates a database, a website bucket, a function, a dashboard · ~90 s</small></div>
+  <p class="lead wide">Show the YAML first, then the CloudFormation Events tab filling up. On-premises this is a three-month purchase order and a change-approval meeting.</p>
+  <aside class="notes">Name the four resources as they appear. If deploy fails live: STACK=cloud101-backup scripts/qr.sh and keep going.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 3 of 6 · your turn</div>
+  <div class="big">Scan.</div>
+  <p>Name, branch, and one word that comes to mind when you hear "cloud".</p>
+  <div class="cmd">scripts/qr.sh<small>opens build/qr.html full screen. Leave it up for 60 seconds, then split the screen with the guestbook.</small></div>
+  <aside class="notes">Read out early entries by name. Point at the "servers AWS created for us" counter. Ask the first scanner how long the "Stored in ap-south-1 … in N ms" message showed.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 4 of 6 · follow one request</div>
+  <h2>Pick one student's entry and trace it through the console</h2>
+  <div class="steps">
+    <div class="tile"><b>S3</b><p>bucket → index.html. The page is just a file in storage.</p></div>
+    <div class="tile"><b>Lambda</b><p>function → Monitor. The code ran only because she tapped Send. Before that: zero cost.</p></div>
+    <div class="tile"><b>DynamoDB</b><p>table → Explore items. Her row, now in three data centres.</p></div>
+    <div class="tile"><b>Guestbook</b><p>the "served by" badge changes as AWS hands requests to different copies of the code.</p></div>
+  </div>
+  <aside class="notes">This is the slide where "cloud" stops being abstract. Go slowly. Open the Lambda code tab: 80 lines, no server, no Docker, no nginx.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 5 of 6 · results day</div>
+  <h2>What if the whole college hits it at once?</h2>
+  <div class="cmd">scripts/blast.sh 200<small>200 requests, 50 at a time. Then open the CloudWatch dashboard the deploy printed.</small></div>
+  <div class="grid g3">
+    <div class="tile"><b>Requests</b><p>spike to hundreds per minute</p></div>
+    <div class="tile"><b>Concurrent servers</b><p>climb from 1 to dozens, on their own</p></div>
+    <div class="tile"><b>Errors</b><p>flat at zero. Nobody woke up at 2 am.</p></div>
+  </div>
+  <p class="lead wide">That is elasticity. Hotstar during an IPL final is this graph with six more zeros.</p>
+  <aside class="notes">After the dashboard: scripts/reset.sh removes the bot rows so the closing word cloud is only real students.</aside>
+</section>
+
+<section class="slide demo">
+  <div class="eyebrow">Demo 6 of 6 · cost, keys, and a bonus</div>
+  <h2>Today's bill, the keys, and AI through the same door</h2>
+  <div class="grid g3">
+    <div class="tile"><b>Billing → Free Tier</b><p>Today: ₹0. Lambda after the free tier: about ₹0.02 per million requests.</p></div>
+    <div class="tile"><b>IAM → Users</b><p>One user, one access key, one role for the function. Shared responsibility in practice.</p></div>
+    <div class="tile"><b>Bonus: Bedrock</b><p class="code" style="font-family:var(--mono)">scripts/ai-demo.sh</p><p>A frontier model, same account, same CLI, one cricket analogy.</p></div>
+  </div>
+  <p class="lead wide">Keep the guestbook running for the close. Terminate the EC2 server now: try returning a physical server to a vendor after 25 minutes.</p>
+  <aside class="notes">scripts/ec2-cleanup.sh. Skip Bedrock without apology if behind schedule.</aside>
+</section>
+
+<!-- ===================== 3 + 4. USES, BENEFITS, REAL WORLD ===================== -->
+<section class="slide">
+  <div class="eyebrow">3 · Key uses and benefits <span class="clock">1:35</span></div>
+  <h2>Why every company moved: the same six reasons you just watched</h2>
+  <div class="grid g3">
+    <div class="tile"><b>Speed</b><p>Minutes instead of months. The deploy took 90 seconds.</p></div>
+    <div class="tile"><b>Elasticity</b><p>Up and down with demand. The blast: 200 requests, zero errors.</p></div>
+    <div class="tile"><b>Cost</b><p>Operating expense, no idle hardware. Today: ₹0.</p></div>
+    <div class="tile"><b>Global reach</b><p>Deploy next to your users. Mumbai, Hyderabad, Singapore: a drop-down.</p></div>
+    <div class="tile"><b>Reliability</b><p>Multi-AZ by default. Your row lives in three data centres.</p></div>
+    <div class="tile"><b>Managed services</b><p>Databases, queues, AI models as APIs. Nobody patched anything today.</p></div>
+  </div>
+  <p class="lead wide">Common uses: web and mobile backends · storage and backup · analytics and big data · machine learning · IoT · disaster recovery · dev and test environments · video streaming.</p>
+  <aside class="notes">Tie each tile to a demo moment; that's why the demo went first.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">4 · Real-world applications</div>
+  <h2>Who runs on this, and what they would say about today's demo</h2>
+  <div class="grid g3">
+    <div class="tile"><b>Netflix</b><p>Runs almost entirely on AWS. Deliberately kills its own servers (Chaos Monkey) to prove nothing breaks. Our "servers created" counter, industrialised.</p></div>
+    <div class="tile"><b>JioHotstar</b><p>Record live-stream concurrency during Cricket World Cup and IPL finals, tens of millions of viewers at once, pre-scaled on AWS. Our blast, with six more zeros.</p></div>
+    <div class="tile"><b>Zomato · Dream11</b><p>Indian apps whose traffic is lunch peaks and match-time peaks. Elasticity is the business model.</p></div>
+    <div class="tile"><b>NASA JPL</b><p>Mars rover images processed and served to the public from S3-style storage.</p></div>
+    <div class="tile"><b>Formula 1</b><p>The live "F1 Insights" graphics on TV are cloud analytics on car telemetry.</p></div>
+    <div class="tile"><b>Moderna</b><p>Designed its COVID-19 vaccine candidate in days on rented compute instead of building a supercomputer.</p></div>
+  </div>
+  <p class="foot">All are publicly documented AWS customer stories; figures as stated in those case studies.</p>
+  <aside class="notes">Ask which Indian apps they use daily and guess which run on a cloud. Nearly all do.</aside>
+</section>
+
+<!-- ===================== 5. OPPORTUNITIES ===================== -->
+<section class="slide">
+  <div class="eyebrow">5 · Opportunities and learning pathways <span class="clock">1:50</span></div>
+  <h2>Cloud is a multiplier on your branch, not a replacement for it</h2>
+  <div class="grid g4">
+    <div class="tile"><b>CSE / IT</b><p>Backend, DevOps, SRE, platform engineering, cloud security</p></div>
+    <div class="tile"><b>AI &amp; DS / ML</b><p>Data engineering, ML engineering: every model trains and serves on cloud GPUs</p></div>
+    <div class="tile"><b>ECE / EEE</b><p>IoT and edge: sensors to AWS IoT Core; rarer and better paid than a generic developer</p></div>
+    <div class="tile"><b>MECH / CIVIL</b><p>Simulation and digital twins on rented HPC; smart-infrastructure telemetry</p></div>
+  </div>
+  <p class="lead wide">Roles that ask for it: cloud engineer, DevOps engineer, site reliability engineer, solutions architect, data engineer, ML engineer, cloud security engineer, FinOps analyst.</p>
+  <aside class="notes">Be honest about salaries: entry cloud roles pay above generic developer roles in Hyderabad, but a certificate alone doesn't get the job; a project does.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">5 · Opportunities and learning pathways</div>
+  <h2>The pathway, and what it costs: mostly nothing</h2>
+  <div class="tbl"><table>
+    <tr><th>Step</th><th>What</th><th>Cost</th></tr>
+    <tr><td>Account</td><td>AWS Free Tier account, or AWS Educate (no credit card needed)</td><td class="num">₹0</td></tr>
+    <tr><td>Learn</td><td>AWS Skill Builder free courses · Cloud Quest game · AWS Academy through your department</td><td class="num">₹0</td></tr>
+    <tr><td>Cert 1</td><td>AWS Certified Cloud Practitioner (CLF-C02): the vocabulary, 2–4 weeks</td><td class="num">$100, vouchers common</td></tr>
+    <tr><td>Cert 2</td><td>Solutions Architect Associate (SAA-C03): the one recruiters search for</td><td class="num">$150</td></tr>
+    <tr><td>Prove it</td><td>A public GitHub repo with something running on AWS. Fork today's guestbook and add a feature.</td><td class="num">₹0</td></tr>
+  </table></div>
+  <aside class="notes">Order matters: account and a project before the certificate, not after. Mention that AWS Educate is 13+ and free.</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">5 · Opportunities and learning pathways</div>
+  <h2>Your next 30 days</h2>
+  <div class="steps">
+    <div class="tile"><b>Week 1</b><p>Create your account. Rebuild today's guestbook from the repo. Delete it. Check the bill.</p></div>
+    <div class="tile"><b>Week 2</b><p>Cloud Practitioner course on Skill Builder, one hour a day.</p></div>
+    <div class="tile"><b>Week 3</b><p>Your own project: resume site on S3 plus one Lambda API. Push it to GitHub.</p></div>
+    <div class="tile"><b>Week 4</b><p>Book CLF-C02, or present your project at an AWS Cloud Club meeting at SNIT.</p></div>
+  </div>
+  <p class="lead wide">Community: AWS User Group Hyderabad, AWS Community Day Hyderabad every year, and AWS Cloud Clubs, which are student-run and AWS-supported. SNIT doesn't have one yet.</p>
+  <aside class="notes">Offer to connect the first five students who send you a working repo link to the Hyderabad user group.</aside>
+</section>
+
+<!-- ===================== CLOSE ===================== -->
+<section class="slide demo">
+  <div class="eyebrow">Close <span class="clock">2:25</span></div>
+  <h2>What this room thinks "cloud" means</h2>
+  <p class="lead wide">Switch to the guestbook: the word cloud and every name. Then, live:</p>
+  <div class="cmd">scripts/destroy.sh<small>empties the bucket, deletes the database, the function, the dashboard. Everything you watched being born.</small></div>
+  <div class="big">The bill stops now.</div>
+  <aside class="notes">Wait for stack-delete-complete on screen. Last line: "You can do everything you saw today, tonight, for free. The repo link is on the next slide."</aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Thank you</div>
+  <h1>Go build something. Then delete it.</h1>
+  <div class="grid g2">
+    <div class="tile"><b>The repo</b><p>Everything from today: template, code, scripts, this runbook.</p><span class="code">github.com/sathpal/aws-cloud-101-demo</span></div>
+    <div class="tile"><b>Start tonight</b><p>aws.amazon.com/free · aws.amazon.com/education/awseducate · skillbuilder.aws</p></div>
+  </div>
+  <p class="foot">Cloud 101 · SNIT Hyderabad · Sathpal</p>
+  <aside class="notes">Leave this slide up during Q&A.</aside>
+</section>
+
+</div>
+<div class="notes" id="notes"></div>
+<div class="bar" id="bar"></div>
+<div class="hud" id="hud"></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')], notes=document.getElementById('notes'), bar=document.getElementById('bar'), hud=document.getElementById('hud');
+  let i=0, showNotes=false;
+  try{ i=Math.min(slides.length-1, Math.max(0, parseInt(localStorage.getItem('cloud101-slide')||'0',10)||0)); }catch(e){}
+  try{ showNotes=localStorage.getItem('cloud101-notes')==='1'; }catch(e){}
+  if(location.hash){ const h=parseInt(location.hash.slice(1),10); if(!isNaN(h)&&h>=1&&h<=slides.length) i=h-1; }
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    const a=slides[i].querySelector('.notes'); notes.innerHTML=a?'<span class="k">notes</span>'+a.innerHTML:'<span class="k">notes</span>(none)';
+    notes.classList.toggle('on',showNotes);
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    hud.textContent=(i+1)+' / '+slides.length; hud.innerHTML+='<kbd>N</kbd> notes <kbd>F</kbd> full';
+    try{ localStorage.setItem('cloud101-slide',String(i)); }catch(e){}
+    history.replaceState(null,'','#'+(i+1));
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(i+1);}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='n'||e.key==='N'){showNotes=!showNotes; try{localStorage.setItem('cloud101-notes',showNotes?'1':'0');}catch(x){} show(i);}
+    else if(e.key==='f'||e.key==='F'){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.(); }
+  });
+  let tx=null; document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx; tx=null; if(Math.abs(dx)>60) show(dx<0?i+1:i-1); },{passive:true});
+  document.getElementById('deck').addEventListener('click',e=>{ if(e.target.closest('a,button,input')) return; show(e.clientX<window.innerWidth*0.2?i-1:i+1); });
+  window.addEventListener('hashchange',()=>{ const h=parseInt(location.hash.slice(1),10); if(!isNaN(h)) show(h-1); });
+  const start=(d)=>show(d&&typeof d.slide==='number'?d.slide:i);
+  try{ window.claude?.hot?.snapshot?.(()=>({slide:i})); }catch(e){}
+  (window.claude?.hot?.ready) ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>

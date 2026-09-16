@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+  <rect width="1100" height="420" fill="#0f1720"/>
+  <text x="40" y="48" fill="#ff9900" font-size="14" letter-spacing="3">CLOUD GUESTBOOK · HOW ONE TAP TRAVELS THROUGH AWS</text>
+  <!-- phone -->
+  <rect x="40" y="120" width="150" height="150" rx="14" fill="#182230" stroke="#2c3a4a"/>
+  <text x="115" y="185" fill="#eef3f8" font-size="30" text-anchor="middle">📱</text>
+  <text x="115" y="230" fill="#eef3f8" font-size="15" text-anchor="middle" font-weight="700">Student phone</text>
+  <text x="115" y="250" fill="#8fa3b8" font-size="12" text-anchor="middle">scans QR, taps Send</text>
+  <!-- s3 -->
+  <rect x="260" y="120" width="170" height="150" rx="14" fill="#182230" stroke="#3f8f4a"/>
+  <text x="345" y="160" fill="#7ee787" font-size="13" text-anchor="middle" letter-spacing="2">AMAZON S3</text>
+  <text x="345" y="195" fill="#eef3f8" font-size="16" text-anchor="middle" font-weight="700">index.html</text>
+  <text x="345" y="218" fill="#8fa3b8" font-size="12" text-anchor="middle">static website</text>
+  <text x="345" y="236" fill="#8fa3b8" font-size="12" text-anchor="middle">"the page is just a file"</text>
+  <!-- lambda -->
+  <rect x="500" y="120" width="170" height="150" rx="14" fill="#182230" stroke="#ff9900"/>
+  <text x="585" y="160" fill="#ff9900" font-size="13" text-anchor="middle" letter-spacing="2">AWS LAMBDA</text>
+  <text x="585" y="195" fill="#eef3f8" font-size="16" text-anchor="middle" font-weight="700">handler.py</text>
+  <text x="585" y="218" fill="#8fa3b8" font-size="12" text-anchor="middle">Function URL, Python 3.12</text>
+  <text x="585" y="236" fill="#8fa3b8" font-size="12" text-anchor="middle">"code without a server"</text>
+  <!-- dynamodb -->
+  <rect x="740" y="120" width="170" height="150" rx="14" fill="#182230" stroke="#4f7cff"/>
+  <text x="825" y="160" fill="#8ab4ff" font-size="13" text-anchor="middle" letter-spacing="2">DYNAMODB</text>
+  <text x="825" y="195" fill="#eef3f8" font-size="16" text-anchor="middle" font-weight="700">guestbook table</text>
+  <text x="825" y="218" fill="#8fa3b8" font-size="12" text-anchor="middle">on-demand, one row per entry</text>
+  <text x="825" y="236" fill="#8fa3b8" font-size="12" text-anchor="middle">"the NoSQL database"</text>
+  <!-- arrows -->
+  <g stroke="#8fa3b8" stroke-width="2" fill="none">
+    <path d="M190 195 H255"/><path d="M430 195 H495"/><path d="M670 195 H735"/>
+  </g>
+  <g fill="#8fa3b8"><path d="M250 190 l10 5 -10 5z"/><path d="M490 190 l10 5 -10 5z"/><path d="M730 190 l10 5 -10 5z"/></g>
+  <text x="222" y="185" fill="#8fa3b8" font-size="11" text-anchor="middle">GET page</text>
+  <text x="462" y="185" fill="#8fa3b8" font-size="11" text-anchor="middle">POST /api</text>
+  <text x="702" y="185" fill="#8fa3b8" font-size="11" text-anchor="middle">put_item</text>
+  <!-- cloudwatch -->
+  <rect x="500" y="310" width="410" height="70" rx="14" fill="#182230" stroke="#d62728"/>
+  <text x="705" y="338" fill="#ff8a8a" font-size="13" text-anchor="middle" letter-spacing="2">CLOUDWATCH DASHBOARD</text>
+  <text x="705" y="362" fill="#8fa3b8" font-size="12" text-anchor="middle">requests · concurrent executions · latency · DB writes · errors</text>
+  <g stroke="#8fa3b8" stroke-width="2" stroke-dasharray="5 4" fill="none"><path d="M585 270 V305"/><path d="M825 270 V305"/></g>
+  <!-- cloudformation -->
+  <rect x="260" y="310" width="170" height="70" rx="14" fill="#182230" stroke="#c678dd"/>
+  <text x="345" y="338" fill="#d8a7ff" font-size="13" text-anchor="middle" letter-spacing="2">CLOUDFORMATION</text>
+  <text x="345" y="362" fill="#8fa3b8" font-size="12" text-anchor="middle">infra/guestbook.yaml creates all of this</text>
+  <!-- ec2 side note -->
+  <rect x="950" y="120" width="120" height="150" rx="14" fill="#182230" stroke="#2c3a4a" stroke-dasharray="6 4"/>
+  <text x="1010" y="160" fill="#ff9900" font-size="13" text-anchor="middle" letter-spacing="2">EC2</text>
+  <text x="1010" y="195" fill="#eef3f8" font-size="14" text-anchor="middle" font-weight="700">t3.micro</text>
+  <text x="1010" y="218" fill="#8fa3b8" font-size="11" text-anchor="middle">separate demo:</text>
+  <text x="1010" y="236" fill="#8fa3b8" font-size="11" text-anchor="middle">"a computer"</text>
+</svg>

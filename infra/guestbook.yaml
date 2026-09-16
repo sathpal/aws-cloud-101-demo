@@ -1,0 +1,160 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Cloud 101 demo (SNIT Hyderabad) - serverless "Cloud Guestbook".
+  S3 static website  ->  Lambda Function URL  ->  DynamoDB, plus a CloudWatch dashboard.
+  Everything here is pay-per-request and sits inside the AWS Free Tier for a classroom.
+
+Resources:
+
+  # ---------- Database: DynamoDB (serverless NoSQL, pay per request) ----------
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: id, AttributeType: S }
+      KeySchema:
+        - { AttributeName: id, KeyType: HASH }
+      Tags:
+        - { Key: project, Value: cloud101 }
+
+  # ---------- Website hosting: S3 bucket configured as a static website ----------
+  WebBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      Tags:
+        - { Key: project, Value: cloud101 }
+
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadForWebsite
+            Effect: Allow
+            Principal: '*'
+            Action: s3:GetObject
+            Resource: !Sub '${WebBucket.Arn}/*'
+
+  # ---------- Compute: Lambda (code runs only when a request arrives) ----------
+  FnRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: guestbook-table
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [ dynamodb:PutItem, dynamodb:Scan, dynamodb:BatchWriteItem ]
+                Resource: !GetAtt Table.Arn
+
+  Fn:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: handler.handler
+      Role: !GetAtt FnRole.Arn
+      MemorySize: 256
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      # Placeholder; scripts/deploy.sh uploads the real code (handler.py + index.html).
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 200, "body": "Guestbook code not uploaded yet. Run scripts/deploy.sh"}
+      Tags:
+        - { Key: project, Value: cloud101 }
+
+  FnUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref Fn
+      AuthType: NONE
+      Cors:
+        AllowOrigins: [ '*' ]
+        AllowMethods: [ '*' ]
+        AllowHeaders: [ '*' ]
+
+  FnUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Fn
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+  # Newer accounts also require plain InvokeFunction for a public (AuthType NONE) Function URL.
+  # (FunctionUrlAuthType is only accepted on the InvokeFunctionUrl action, so no condition here.)
+  FnUrlInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Fn
+      Action: lambda:InvokeFunction
+      Principal: '*'
+
+  # ---------- Observability: CloudWatch dashboard to project on screen ----------
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub '${AWS::StackName}-live'
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {"type":"metric","x":0,"y":0,"width":8,"height":7,"properties":{
+              "title":"Requests handled (per minute)","view":"timeSeries","stacked":false,"period":60,"region":"${AWS::Region}",
+              "metrics":[["AWS/Lambda","Invocations","FunctionName","${Fn}",{"stat":"Sum","label":"requests"}]]}},
+            {"type":"metric","x":8,"y":0,"width":8,"height":7,"properties":{
+              "title":"Servers AWS spun up for us (concurrent executions)","view":"timeSeries","stacked":false,"period":60,"region":"${AWS::Region}",
+              "metrics":[["AWS/Lambda","ConcurrentExecutions","FunctionName","${Fn}",{"stat":"Maximum","label":"concurrent"}]]}},
+            {"type":"metric","x":16,"y":0,"width":8,"height":7,"properties":{
+              "title":"Response time (ms)","view":"timeSeries","stacked":false,"period":60,"region":"${AWS::Region}",
+              "metrics":[["AWS/Lambda","Duration","FunctionName","${Fn}",{"stat":"Average","label":"avg"}],
+                         ["AWS/Lambda","Duration","FunctionName","${Fn}",{"stat":"Maximum","label":"max"}]]}},
+            {"type":"metric","x":0,"y":7,"width":12,"height":6,"properties":{
+              "title":"Database writes (DynamoDB)","view":"timeSeries","stacked":false,"period":60,"region":"${AWS::Region}",
+              "metrics":[["AWS/DynamoDB","ConsumedWriteCapacityUnits","TableName","${Table}",{"stat":"Sum","label":"writes"}]]}},
+            {"type":"metric","x":12,"y":7,"width":12,"height":6,"properties":{
+              "title":"Errors (should stay at zero)","view":"timeSeries","stacked":false,"period":60,"region":"${AWS::Region}",
+              "metrics":[["AWS/Lambda","Errors","FunctionName","${Fn}",{"stat":"Sum","label":"errors","color":"#d62728"}]]}}
+          ]
+        }
+
+Outputs:
+  WebsiteURL:
+    Description: S3 static website (primary URL for students)
+    Value: !GetAtt WebBucket.WebsiteURL
+  FunctionUrl:
+    Description: Lambda Function URL (API, and fallback page URL)
+    Value: !GetAtt FnUrl.FunctionUrl
+  BucketName:
+    Value: !Ref WebBucket
+  TableName:
+    Value: !Ref Table
+  FunctionName:
+    Value: !Ref Fn
+  DashboardURL:
+    Value: !Sub 'https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=${AWS::StackName}-live'

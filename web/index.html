@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud Guestbook · SNIT Hyderabad</title>
+<style>
+  :root{--bg:#0f1720;--panel:#172230;--line:#27364a;--ink:#eef3f8;--muted:#8fa3b8;--accent:#ff9900;--ok:#3ddc97;--font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);padding:16px;max-width:640px;margin-inline:auto}
+  h1{font-size:1.35rem;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  label{display:block;font-size:.8rem;color:var(--muted);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+  input,select,button{width:100%;font:inherit;font-size:1rem;padding:12px;border-radius:8px;border:1px solid var(--line);background:#0c131b;color:var(--ink)}
+  button{background:var(--accent);color:#1a1200;font-weight:700;border:0;margin-top:14px;cursor:pointer}
+  button:disabled{opacity:.6}
+  .big{font-size:3.2rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .stat{flex:1;min-width:120px}
+  .stat small{display:block;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;margin-top:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{background:#0c131b;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:.85rem}
+  .chip b{color:var(--accent)}
+  ul{list-style:none;padding:0;margin:8px 0 0}
+  li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.92rem}
+  li:first-child{border-top:0}
+  li .who{font-weight:600}
+  li .meta{color:var(--muted);font-size:.8rem;white-space:nowrap}
+  .badge{display:inline-block;background:#0c131b;border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-family:ui-monospace,Menlo,monospace;font-size:.78rem;color:var(--ok)}
+  .msg{font-size:.9rem;color:var(--ok);min-height:1.2em;margin-top:8px}
+  .err{color:#ff7b7b}
+  footer{color:var(--muted);font-size:.78rem;text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+  <h1>☁️ Cloud Guestbook · SNIT Hyderabad</h1>
+  <p class="sub">This page lives in Amazon S3. Your entry travels to a Lambda function in an AWS data centre in India and is stored in DynamoDB. No server was set up for this.</p>
+
+  <div class="card">
+    <form id="f">
+      <label for="name">Your name</label>
+      <input id="name" maxlength="40" placeholder="e.g. Priya" required autocomplete="off">
+      <label for="branch">Branch</label>
+      <select id="branch">
+        <option>CSE</option><option>IT</option><option>AI &amp; DS</option><option>AI &amp; ML</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option><option>Other</option>
+      </select>
+      <label for="word">One word that comes to mind when you hear "cloud"</label>
+      <input id="word" maxlength="30" placeholder="e.g. storage, servers, rain…" autocomplete="off">
+      <button id="go" type="submit">Send to the cloud</button>
+      <div id="msg" class="msg"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="stat"><div class="big" id="count">–</div><small>entries stored</small></div>
+      <div class="stat"><div class="big" id="inst">–</div><small>servers AWS created for us</small></div>
+    </div>
+    <div style="margin-top:10px;font-size:.85rem;color:var(--muted)">Handled in <span class="badge" id="region">…</span> by server <span class="badge" id="server">…</span></div>
+  </div>
+
+  <div class="card">
+    <strong>What "cloud" means to this room</strong>
+    <div class="chips" id="chips"><span class="chip">waiting for entries…</span></div>
+  </div>
+
+  <div class="card">
+    <strong>Latest entries</strong>
+    <ul id="list"><li><span class="meta">nothing yet</span></li></ul>
+  </div>
+
+  <footer>S3 · Lambda · DynamoDB · CloudWatch — built for the Cloud 101 session</footer>
+
+<script>
+  const API = "__API_BASE__" || location.origin;
+  const $ = id => document.getElementById(id);
+  const seen = new Set();
+  let sent = false;
+
+  async function refresh(){
+    try{
+      const r = await fetch(API + "/api", {cache:"no-store"});
+      const d = await r.json();
+      $("count").textContent = d.count;
+      (d.instances||[]).forEach(i => seen.add(i)); seen.add(d.instance);
+      $("inst").textContent = seen.size;
+      $("region").textContent = d.region;
+      $("server").textContent = d.instance;
+      const tally = {};
+      (d.words||[]).forEach(w => { tally[w] = (tally[w]||0)+1; });
+      const top = Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,25);
+      $("chips").innerHTML = top.length ? top.map(([w,n]) => `<span class="chip">${esc(w)} <b>${n}</b></span>`).join("") : '<span class="chip">waiting for entries…</span>';
+      $("list").innerHTML = (d.entries||[]).slice(0,25).map(e =>
+        `<li><span><span class="who">${esc(e.name)}</span> <span class="meta">${esc(e.branch||"")}</span>${e.word?` · ${esc(e.word)}`:""}</span><span class="meta">${ago(e.ts)}</span></li>`
+      ).join("") || '<li><span class="meta">nothing yet</span></li>';
+    }catch(e){ $("msg").textContent = "Cannot reach the API right now…"; $("msg").className = "msg err"; }
+  }
+
+  $("f").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    $("go").disabled = true; $("msg").className = "msg"; $("msg").textContent = "Sending to AWS…";
+    const t0 = performance.now();
+    try{
+      const r = await fetch(API + "/api", {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({name:$("name").value, branch:$("branch").value, word:$("word").value})});
+      const d = await r.json();
+      if(!r.ok) throw new Error(d.error||r.status);
+      const ms = Math.round(performance.now() - t0);
+      $("msg").textContent = `Stored in ${d.region} by server ${d.instance} in ${ms} ms ✔`;
+      $("word").value = ""; sent = true;
+      refresh();
+    }catch(e){ $("msg").textContent = "Failed: " + e.message; $("msg").className = "msg err"; }
+    finally{ $("go").disabled = false; }
+  });
+
+  function esc(s){ return String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function ago(ts){ const s = Math.max(0, Math.round((Date.now()-ts)/1000)); return s<60?`${s}s ago`:s<3600?`${Math.floor(s/60)}m ago`:`${Math.floor(s/3600)}h ago`; }
+  refresh(); setInterval(refresh, 2500);
+</script>
+</body>
+</html>
