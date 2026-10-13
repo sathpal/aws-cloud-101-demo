@@ -41,7 +41,7 @@ DASH=$DASH
 E
 echo
 ok "Done in $(( $(date +%s) - T0 )) s"
-echo "  Students open : $DEMO_URL"
+echo "  Open in browser: $DEMO_URL"
 echo "  API           : $API_BASE/api"
 echo "  Dashboard     : $DASH"
 echo "  Next          : scripts/qr.sh   (puts the QR on screen)"

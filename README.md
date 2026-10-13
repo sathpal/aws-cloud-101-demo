@@ -1,14 +1,14 @@
-# Cloud 101 · Build your first thing on AWS
+# Cloud 101 · Build, load-test and delete a serverless app on AWS
 
-A step-by-step guide for students. You start with **no AWS account** and finish with a small, real,
+A step-by-step guide. You start with **no AWS account** and finish with a small, real,
 serverless web app running in an AWS data centre, load-tested by you, and deleted by you.
-Total time: about 90 minutes the first time. Cost: **₹0** if you follow the cleanup step.
+About 90 minutes the first time. Cost: **₹0** if you follow the cleanup step.
 
-You will build the **Cloud Guestbook** you saw in the session: a web page on S3, an API on Lambda,
-a database on DynamoDB, a live dashboard on CloudWatch, all created from one file by CloudFormation.
-You will also rent a Linux server on EC2 for a few minutes and then throw it away.
+You will build the **Cloud Guestbook**: a web page on S3, an API on Lambda, a database on DynamoDB,
+a live dashboard on CloudWatch, all created from one file by CloudFormation. You will also rent a
+Linux server on EC2 for a few minutes and then throw it away.
 
-![How one tap travels through AWS](docs/architecture.svg)
+![How one request travels through AWS](docs/architecture.svg)
 
 | What you'll see | Screenshot |
 |---|---|
@@ -34,7 +34,7 @@ You will also rent a Linux server on EC2 for a few minutes and then throw it awa
 13. [Demo 6 (optional) · Ask an AI model](#13-demo-6-optional--ask-an-ai-model)
 14. [Delete everything](#14-delete-everything)
 15. [Troubleshooting](#15-troubleshooting)
-16. [What next](#16-what-next)
+16. [Next steps](#16-next-steps)
 17. [Repo layout](#17-repo-layout)
 
 ---
@@ -47,7 +47,7 @@ The card is used for identity verification. AWS may place a small temporary hold
 ![AWS sign-up page](docs/screenshots/aws-signup-page.png)
 
 1. Open **https://aws.amazon.com/free** and click **Create a free account**.
-2. **Root user email address**: use a personal email you will keep for years. **AWS account name**: anything, for example `priya-cloud101`.
+2. **Root user email address**: use an email you will keep for years. **AWS account name**: anything, for example `my-cloud101`.
 3. Click **Verify email address**, open the mail from AWS and type the 6-digit code.
 4. Set a **root user password**. Make it long and store it in a password manager. This password controls the whole account.
 5. **Contact information**: choose **Personal**, fill your name, phone and address.
@@ -75,7 +75,7 @@ Do this once, right after signing in. Takes 3 minutes.
 3. Choose **Authenticator app**, scan the QR with Google Authenticator or Authy, type two consecutive codes, done.
 4. Never create an access key for the root user. Never share the root password.
 
-From now on you will use the root user only for billing and account settings. Daily work happens with an IAM user.
+From now on use the root user only for billing and account settings. Daily work happens with an IAM user.
 
 ---
 
@@ -87,13 +87,13 @@ The command line cannot use your browser login. It needs an **access key**, whic
 2. Left menu: **Users**, then **Create user**.
 3. **User name**: `cloud101`. Leave "Provide user access to the AWS Management Console" unticked. **Next**.
 4. **Permissions options**: choose **Attach policies directly**, tick **AdministratorAccess**, **Next**, **Create user**.
-   Administrator access is fine for a learning account that you will delete. At a job you would get far less.
+   Administrator access is fine for a personal learning account that you will delete. In a shared or company account you would get far less.
 5. Click the user `cloud101`, open the **Security credentials** tab, scroll to **Access keys**, click **Create access key**.
 6. Use case: **Command Line Interface (CLI)**. Tick the confirmation box. **Next**, **Create access key**.
 7. You now see an **Access key ID** and a **Secret access key**. Click **Download .csv file** and keep it somewhere safe.
    The secret is shown **only once**.
 
-> **Security rule you will hear again in every job:** never paste an access key into code, a chat, a screenshot, or a Git repository.
+> **Security rule:** never paste an access key into code, a chat, a screenshot, or a Git repository.
 > If a key leaks, bots find it within minutes and start mining crypto on your bill. If that happens, go to IAM and click **Deactivate** on the key.
 
 ---
@@ -154,7 +154,8 @@ Default region name [None]:   ap-south-1
 Default output format [None]: json
 ```
 
-`ap-south-1` is **Mumbai**. Every AWS region has a code like this. Hyderabad is `ap-south-2`, Sydney is `ap-southeast-2`.
+`ap-south-1` is **Mumbai**. Every AWS region has a code like this. Pick whichever region is closest to you;
+the demo works in any of them. Hyderabad is `ap-south-2`, Sydney is `ap-southeast-2`, Ireland is `eu-west-1`.
 
 ![AWS regions](docs/screenshots/aws-regions-page.png)
 
@@ -238,7 +239,7 @@ Expected output ends like this:
 
 ```
 ✔ Done in 79 s
-  Students open : http://cloud101-guestbook-webbucket-xxxx.s3-website-ap-south-1.amazonaws.com
+  Open in browser: http://cloud101-guestbook-webbucket-xxxx.s3-website-ap-south-1.amazonaws.com
   API           : https://xxxx.lambda-url.ap-south-1.on.aws/api
   Dashboard     : https://ap-south-1.console.aws.amazon.com/cloudwatch/home?region=ap-south-1#dashboards:name=cloud101-guestbook-live
 ```
@@ -255,7 +256,7 @@ On-premises this would be a purchase order, a rack, and weeks of waiting.
 scripts/qr.sh
 ```
 
-A full-screen QR page opens. Scan it with your phone, type your name, branch and one word, tap **Send to the cloud**.
+A full-screen QR page opens. Scan it with your phone, type a name, pick a branch and a word, tap **Send to the cloud**.
 
 ![QR page](docs/screenshots/qr-page.png)
 
@@ -290,7 +291,7 @@ scripts/status.sh
 
 ## 12. Demo 5 · Hit it with 200 requests
 
-"What happens if the whole college opens it at once on results day?"
+"What happens if everyone opens it at the same moment?"
 
 Open the CloudWatch dashboard first, set the time range to **1h** and auto-refresh to **10 s**. Then:
 
@@ -328,7 +329,7 @@ Amazon Bedrock offers AI models as an API in the same account, with the same CLI
 2. Then:
 
 ```bash
-scripts/ai-demo.sh "Explain cloud computing to a first-year student in 3 lines, with one cricket analogy."
+scripts/ai-demo.sh "Explain cloud computing in 3 lines, with one cricket analogy."
 ```
 
 If it says no model is visible, skip this step. It is a bonus.
@@ -369,29 +370,29 @@ Try returning a physical server to a vendor after 25 minutes.
 
 ---
 
-## 16. What next
+## 16. Next steps
 
-- **Week 1**: rebuild this from scratch without the scripts. Click through the console to create the same bucket, function and table by hand. Then read the YAML again.
-- **Week 2**: the AWS Cloud Practitioner course on **AWS Skill Builder** is free. The exam is CLF-C02.
-- **Week 3**: fork this repo and add a feature. Ideas: photo upload to S3, a leaderboard by branch, a delete-my-entry button, a second region.
-- **Week 4**: put a resume site on S3 plus one Lambda API on your GitHub. A repo beats a certificate in an interview.
+- Rebuild this without the scripts. Click through the console to create the same bucket, function and table by hand, then read the YAML again and notice how much it saved you.
+- Fork the repo and add a feature. Ideas: photo upload to S3, a leaderboard, a delete-my-entry button, a second region, a custom domain with HTTPS through CloudFront.
+- The **AWS Certified Cloud Practitioner** (CLF-C02) covers exactly the concepts in this demo. The course on **AWS Skill Builder** is free.
+- Put something of your own on S3 plus one Lambda API, and keep the code public. A working repo says more than a certificate.
 
-Free things worth knowing: AWS Educate, AWS Skill Builder, AWS Academy through your college, the AWS User Group in Hyderabad, and AWS Community Day.
+Other free resources: AWS Skill Builder, AWS Workshops (workshops.aws), re:Invent talks on YouTube, and your local AWS User Group.
 
 ---
 
 ## 17. Repo layout
 
 ```
-README.md            this guide (students)
-PRESENTER.md         setup notes for whoever presents the session
-RUNBOOK.md           the 2-hour session plan, talking points, fallbacks
+README.md            this guide
+PRESENTER.md         setup notes for running the demo live for an audience
+RUNBOOK.md           a 2-hour session plan, talking points, fallbacks
 CONSOLE-TABS.md      console links to show an audience
 infra/guestbook.yaml CloudFormation template: everything in the guestbook
 lambda/handler.py    the backend
 web/index.html       the page
 scripts/             one script per demo step (read them, they are short)
-slides/deck.html     the session slides
+slides/deck.html     session slides
 docs/                diagram and screenshots
 ```
 

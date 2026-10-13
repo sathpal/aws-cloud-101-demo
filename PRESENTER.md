@@ -11,7 +11,7 @@ phones, and deleted live at the end ("the bill stops now").
 | **Load blast** | 200 requests in a few seconds, dashboard spikes, no crash, no one did anything | Lambda auto-scaling |
 | **Bonus: AI** | Ask a model on Bedrock a cricket-flavoured question from the terminal | Amazon Bedrock (optional, needs model access) |
 
-Read [RUNBOOK.md](RUNBOOK.md) for the minute-by-minute plan, talking points and fallbacks, and [CONSOLE-TABS.md](CONSOLE-TABS.md) for the console links to show the audience. Students should start from [README.md](README.md).
+Read [RUNBOOK.md](RUNBOOK.md) for the minute-by-minute plan, talking points and fallbacks, and [CONSOLE-TABS.md](CONSOLE-TABS.md) for the console links to show the audience. To run the demo yourself, start from [README.md](README.md).
 
 ## Setup (tonight, ~10 minutes)
 

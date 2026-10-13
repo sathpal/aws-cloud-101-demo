@@ -24,4 +24,4 @@ If you redeploy, resource names change. Re-run `scripts/deploy.sh` and read the 
 Keep the **guestbook page itself** open on the projector too. The "servers AWS created for us" counter on it is the
 payoff of the blast.
 
-Students open: http://cloud101-guestbook-webbucket-emqz5nobqxmp.s3-website-ap-southeast-2.amazonaws.com
+Open in browser: http://cloud101-guestbook-webbucket-emqz5nobqxmp.s3-website-ap-southeast-2.amazonaws.com
