@@ -7,10 +7,9 @@ aws --version
 ID=$(aws sts get-caller-identity 2>&1) || die "AWS CLI has no working credentials.
    Fix: in the AWS console -> IAM -> Users -> Create user 'cloud101' -> attach AdministratorAccess
         -> Security credentials -> Create access key (CLI) -> then run:  aws configure
-        (region: ap-south-1, output: json)"
+        (region: the one nearest you, e.g. ap-south-1; output: json)"
 echo "$ID" | jq .
-ok "Region: $AWS_REGION"
-[ "$AWS_REGION" = "ap-south-1" ] || warn "Region is not ap-south-1 (Mumbai). Demo works anywhere, but the story is 'Mumbai'."
+ok "Region: $AWS_REGION (the demo works in any region)"
 ACCT=$(echo "$ID" | jq -r .Account)
 BPA=$(aws s3control get-public-access-block --account-id "$ACCT" 2>/dev/null | jq -c .PublicAccessBlockConfiguration || echo "none")
 if echo "$BPA" | grep -q true; then warn "Account-level S3 Block Public Access is ON ($BPA). The S3 website URL will 404; deploy.sh will fall back to the Lambda URL."
