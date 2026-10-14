@@ -394,7 +394,6 @@ web/index.html       the page
 scripts/             one script per demo step (read them, they are short)
 slides/deck.html     session slides
 docs/                diagram and screenshots
-articles/            write-ups of the demo for dev.to and Medium
 ```
 
 | Script | Purpose |
