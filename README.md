@@ -12,8 +12,8 @@ Linux server on EC2 for a few minutes and then throw it away.
 
 | What you'll see | Screenshot |
 |---|---|
-| The guestbook page, served from S3, talking to Lambda and DynamoDB | ![Guestbook](docs/screenshots/guestbook-page.png) |
-| Your own EC2 server reporting its instance ID, data centre and IP | ![EC2](docs/screenshots/ec2-hello-page.png) |
+| The guestbook page, served from S3, talking to Lambda and DynamoDB | ![Guestbook](docs/screenshots/guestbook-desktop.png) |
+| Your own EC2 server reporting its instance ID, data centre and IP | ![EC2](docs/screenshots/ec2-server-page.png) |
 
 ---
 
@@ -211,7 +211,7 @@ What happens, in order (read the script, it is 25 lines):
 
 About 90 seconds later you get a page like this, built by the server itself from its own metadata:
 
-![EC2 hello page](docs/screenshots/ec2-hello-page.png)
+![EC2 hello page](docs/screenshots/ec2-server-page.png)
 
 **Look in the console:** search **EC2**, click **Instances**. Watch the state go `pending` then `running`.
 Click the instance, then the **Security** tab: that is the firewall you created. Note the **Availability Zone**: that is a physical data centre.
@@ -258,14 +258,14 @@ scripts/qr.sh
 
 A full-screen QR page opens. Scan it with your phone, type a name, where you are joining from, and one word, tap **Send to the cloud**.
 
-![QR page](docs/screenshots/qr-page.png)
+![QR page](docs/screenshots/qr-code-page.png)
 
 Your entry appears on the page within a couple of seconds, along with two counters:
 
 - **Entries stored**: rows in DynamoDB.
 - **Servers AWS created for us**: how many separate copies of your Lambda code have run so far. Right now it is 1. Remember that number.
 
-![Guestbook on a phone](docs/screenshots/guestbook-mobile.png)
+![Guestbook on a phone](docs/screenshots/guestbook-phone.png)
 
 ---
 
