@@ -4,7 +4,7 @@
   <!-- phone -->
   <rect x="40" y="120" width="150" height="150" rx="14" fill="#182230" stroke="#2c3a4a"/>
   <text x="115" y="185" fill="#eef3f8" font-size="30" text-anchor="middle">📱</text>
-  <text x="115" y="230" fill="#eef3f8" font-size="15" text-anchor="middle" font-weight="700">Student phone</text>
+  <text x="115" y="230" fill="#eef3f8" font-size="15" text-anchor="middle" font-weight="700">Your phone</text>
   <text x="115" y="250" fill="#8fa3b8" font-size="12" text-anchor="middle">scans QR, taps Send</text>
   <!-- s3 -->
   <rect x="260" y="120" width="170" height="150" rx="14" fill="#182230" stroke="#3f8f4a"/>

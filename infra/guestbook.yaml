@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  Cloud 101 demo (SNIT Hyderabad) - serverless "Cloud Guestbook".
+  Cloud 101 demo - serverless "Cloud Guestbook".
   S3 static website  ->  Lambda Function URL  ->  DynamoDB, plus a CloudWatch dashboard.
-  Everything here is pay-per-request and sits inside the AWS Free Tier for a classroom.
+  Everything here is pay-per-request and sits inside the AWS Free Tier for one room of people.
 
 Resources:
 
@@ -145,7 +145,7 @@ Resources:
 
 Outputs:
   WebsiteURL:
-    Description: S3 static website (primary URL for students)
+    Description: S3 static website (primary URL to share)
     Value: !GetAtt WebBucket.WebsiteURL
   FunctionUrl:
     Description: Lambda Function URL (API, and fallback page URL)

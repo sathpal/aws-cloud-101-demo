@@ -1,7 +1,7 @@
-# RUNBOOK — Cloud 101 @ SNIT Hyderabad
+# RUNBOOK — Cloud 101 live session
 
 **Format:** 2-hour session + 30-minute live demo (150 min plan; a 120-min compression is at the end).
-**Audience:** engineering students, mostly first exposure to cloud. Optimise for *feel it*, not *cover it*.
+**Audience:** beginners, mostly first exposure to cloud. Optimise for *feel it*, not *cover it*.
 **Spine of the session:** one question — *"Where does Instagram actually live?"* — answered by building
 a tiny piece of Instagram (a guestbook) in front of them, on their phones, and deleting it at the end.
 
@@ -14,12 +14,12 @@ a tiny piece of Instagram (a guestbook) in front of them, on their phones, and d
 - [ ] `scripts/blast.sh 200` → open the dashboard link → you should see a spike and 0 errors. `STACK=cloud101-backup scripts/reset.sh`.
 - [ ] `scripts/ec2-demo.sh` → page opens → `scripts/ec2-cleanup.sh`. (EC2 is the only thing that bills while idle.)
 - [ ] Optional: `scripts/ai-demo.sh`. If it says no model, enable one in Bedrock → *Model access* (Mumbai) or skip the bonus.
-- [ ] Optional "wow": enable **Asia Pacific (Hyderabad) ap-south-2** in *Account → AWS Regions* (takes a few minutes), then
-      `AWS_REGION=ap-south-2 STACK=cloud101-hyd scripts/preflight.sh` and deploy there — "your data is stored *in this city*."
-      Bedrock is not in ap-south-2; keep the AI bonus on Mumbai.
+- [ ] Optional "wow": if AWS has a region in or near the audience's city, enable it in *Account → AWS Regions* (takes a few minutes), then
+      `AWS_REGION=<that-region> STACK=cloud101-local scripts/preflight.sh` and deploy there — "your data is stored *in this city*."
+      Check Bedrock availability in that region first; keep the AI bonus where it works.
 - [ ] Browser tabs pinned, in this order: AWS console home (region = Mumbai) · CloudFormation · S3 · Lambda · DynamoDB ·
       CloudWatch dashboard · EC2 instances · `build/qr.html`. Sign out of everything else. Font size up in the terminal (⌘+ ×3).
-- [ ] Phone hotspot ready (college Wi-Fi often blocks odd ports; the demo only needs 80/443, but the *presenter laptop* must reach AWS).
+- [ ] Phone hotspot ready (venue Wi-Fi often blocks odd ports; the demo only needs 80/443, but the *presenter laptop* must reach AWS).
 - [ ] Print or keep on phone: the **Fallback matrix** (section 5).
 
 ## 1. Timeline (150 min)
@@ -28,11 +28,11 @@ a tiny piece of Instagram (a guestbook) in front of them, on their phones, and d
 |---|---|---|
 | 0:00 – 0:10 | **Hook** | "Where does Instagram live?" Poll the room via the guestbook itself (already deployed? No — use hands). Ask what happens in the 300 ms after you tap a reel. |
 | 0:10 – 0:35 | **What is cloud computing** | Definition, the before/after story, the 5 characteristics, IaaS/PaaS/SaaS with the pizza analogy, public/private/hybrid |
-| 0:35 – 1:00 | **AWS fundamentals** | 2006 story, global infrastructure (Regions/AZs, Mumbai + Hyderabad), the 8 services you must know, pay-as-you-go, shared responsibility |
+| 0:35 – 1:00 | **AWS fundamentals** | 2006 story, global infrastructure (Regions/AZs, the ones nearest the audience), the 8 services you must know, pay-as-you-go, shared responsibility |
 | 1:00 – 1:05 | Stretch break | Put the QR on screen *now* so early scanners seed the guestbook |
 | 1:05 – 1:35 | **LIVE DEMO (30 min)** | Section 2 below |
 | 1:35 – 1:50 | **Uses & benefits, real-world** | Netflix, Hotstar at IPL scale, Zomato/Dream11, NASA, F1, Moderna. Tie every case to something they just saw |
-| 1:50 – 2:10 | **Opportunities & pathways** | Roles, salaries reality-check, certifications, free resources, a 30-day plan, AWS Cloud Club at SNIT |
+| 1:50 – 2:10 | **Opportunities & pathways** | Roles, salaries reality-check, certifications, free resources, a 30-day plan, local community |
 | 2:10 – 2:25 | **Q&A** | Seed questions in section 6 if the room is quiet |
 | 2:25 – 2:30 | **Close** | Show the final word cloud, `scripts/destroy.sh` live: "the bill stops now." |
 
@@ -66,14 +66,14 @@ scripts/qr.sh
 Say: *"Scan, type your name, branch and one word that comes to mind when you hear 'cloud'. Go."* Leave the QR up 60 s, then split screen: QR left, guestbook right.
 
 ### 2.4 (10–16 min) Follow one request through AWS
-Pick a student's entry as it appears. Trace it live:
+Pick one entry as it appears. Trace it live:
 1. **S3 tab** → bucket → `index.html`: *"the page itself is just a file in storage. S3 stores trillions of objects; your page is one."*
-2. **Lambda tab** → function → *Monitor*: *"this code ran only because Priya tapped Send. Before that it consumed nothing, cost nothing."* Open *Code* and show `handler.py` — 80 lines, no server.
-3. **DynamoDB tab** → *Explore items*: find Priya's row. *"That row is now stored in three data centres automatically."*
+2. **Lambda tab** → function → *Monitor*: *"this code ran only because someone tapped Send. Before that it consumed nothing, cost nothing."* Open *Code* and show `handler.py` — 80 lines, no server.
+3. **DynamoDB tab** → *Explore items*: find that person's row. *"That row is now stored in three data centres automatically."*
 4. Back to the guestbook page: point at the **"servers AWS created for us"** counter and the `served by` badge changing.
 
 ### 2.5 (16–21 min) Scale — the moment that lands
-Say: *"What if the whole college hits it at once during results day?"*
+Say: *"What if everyone hits it at once?"*
 ```bash
 scripts/blast.sh 200
 ```
@@ -82,11 +82,11 @@ Open the **CloudWatch dashboard** tab (link printed by deploy). Watch *Requests*
 ### 2.6 (21–25 min) What it costs — and who does what
 - **Billing tab** (or Free Tier page): today's charge: ₹0. Explain per-request pricing: Lambda ≈ ₹0.02 per *million* requests after free tier; the whole room for a year would cost less than one samosa.
 - **IAM tab**: the `cloud101` user. *"Security is shared: AWS guards the building, you guard the keys."*
-- **Global infrastructure**: top-right region switcher → point at Hyderabad. *"There is an AWS region in this city."*
+- **Global infrastructure**: top-right region switcher → point at the region nearest the venue. *"There is an AWS region near this city."*
 
 ### 2.7 (25–28 min) Bonus — AI is now a cloud API (skip if behind)
 ```bash
-scripts/ai-demo.sh "Explain cloud computing to a first-year student in Hyderabad in 3 lines, with one cricket analogy."
+scripts/ai-demo.sh "Explain cloud computing to a complete beginner in 3 lines, with one everyday analogy."
 ```
 *"The same account, the same CLI, a frontier model. This is why cloud skills and AI skills are now the same job."*
 
@@ -109,7 +109,7 @@ scripts/ec2-cleanup.sh
 
 ### The fundamentals and purpose of AWS
 - **Story:** Amazon built internal infrastructure to survive Diwali-scale shopping peaks, then rented it out. S3 launched March 2006, EC2 August 2006. Today the largest cloud provider; the reference against which others are measured.
-- **Global infrastructure:** Regions (a city; ≥3 isolated data centre clusters) → Availability Zones → data centres. India: **Mumbai `ap-south-1` (2016)** and **Hyderabad `ap-south-2` (Nov 2022)**. Data residency: an Indian bank can keep data in India.
+- **Global infrastructure:** Regions (a city; ≥3 isolated data centre clusters) → Availability Zones → data centres. Name the ones nearest the audience (for example `ap-south-1` Mumbai, `ap-southeast-1` Singapore, `eu-central-1` Frankfurt). Data residency: a bank can keep its data inside its own country.
 - **The 8 services to recognise on sight:**
   EC2 (servers) · S3 (object storage) · Lambda (run code without servers) · DynamoDB (NoSQL DB) · RDS (SQL DB) · VPC (your private network) · IAM (who may do what) · CloudWatch (metrics & logs).
   Plus one growing family: Bedrock / SageMaker (AI).
@@ -131,16 +131,16 @@ scripts/ec2-cleanup.sh
 - **Government / public sector in India** — DigiLocker-style scale, state portals, and many EdTech platforms (BYJU'S, Unacademy have been AWS customers).
   Say "as described in AWS's own case studies" — keep it honest.
 
-### Opportunities and learning pathways for students
-- **Roles:** Cloud/DevOps engineer · SRE · Solutions architect · Data engineer · ML engineer · Cloud security · FinOps. Cloud is a *multiplier* on their core branch, not a replacement — an ECE student doing IoT on AWS is rarer and better paid than a generic developer.
-- **Certifications, in order:** AWS Certified Cloud Practitioner (CLF-C02, foundation, ~2–4 weeks of prep) → Solutions Architect Associate (SAA-C03, the one recruiters look for) → Developer / SysOps → specialities (Security, ML, Data). Students often get exam vouchers via AWS Educate / AWS Academy / Emerging Talent programmes.
+### Opportunities and learning pathways
+- **Roles:** Cloud/DevOps engineer · SRE · Solutions architect · Data engineer · ML engineer · Cloud security · FinOps. Cloud is a *multiplier* on an existing skill, not a replacement — an electronics engineer doing IoT on AWS is rarer and better paid than a generic developer.
+- **Certifications, in order:** AWS Certified Cloud Practitioner (CLF-C02, foundation, ~2–4 weeks of prep) → Solutions Architect Associate (SAA-C03, the one recruiters look for) → Developer / SysOps → specialities (Security, ML, Data). Learners often get exam vouchers via AWS Educate / AWS Academy / Emerging Talent programmes.
 - **Free resources:** AWS Educate (no credit card) · AWS Skill Builder free courses & Cloud Quest game · AWS Academy (ask your department to join) · AWS Free Tier account · AWS Workshops (workshops.aws) · re:Invent talks on YouTube.
-- **Community:** AWS User Group Hyderabad, AWS Community Day Hyderabad (annual), start an **AWS Cloud Club** at SNIT (student-run, AWS supports it).
-- **30-day plan:** Week 1 — create account, make this guestbook yourself from the repo. Week 2 — Cloud Practitioner course on Skill Builder. Week 3 — put your own project (resume site on S3 + a Lambda API) on GitHub. Week 4 — book the CLF-C02 or present at the college club.
+- **Community:** the local AWS User Group, AWS Community Day (annual in most big cities), and **AWS Cloud Clubs** for campuses (AWS supports them).
+- **30-day plan:** Week 1 — create account, make this guestbook yourself from the repo. Week 2 — Cloud Practitioner course on Skill Builder. Week 3 — put your own project (resume site on S3 + a Lambda API) on GitHub. Week 4 — book the CLF-C02 or present at a local meetup.
 - **Portfolio > certificate:** the repo they just watched is public; challenge them to fork it, add a feature (photo upload to S3, a leaderboard), and send you the link.
 
 ## 4. What to show in the console (tab order)
-1. Console home, region switcher (Mumbai, Hyderabad)  2. CloudFormation → stack → Events / Resources
+1. Console home, region switcher (the regions nearest the audience)  2. CloudFormation → stack → Events / Resources
 3. S3 → bucket → objects, *Properties → Static website hosting*  4. Lambda → function → Code, Monitor
 5. DynamoDB → table → Explore items  6. CloudWatch → Dashboards → `cloud101-guestbook-live`
 7. EC2 → Instances  8. IAM → Users  9. Billing → Free Tier
@@ -152,7 +152,7 @@ scripts/ec2-cleanup.sh
 | Laptop can't reach AWS | Phone hotspot. Everything works on mobile data. |
 | `deploy.sh` fails live | `STACK=cloud101-backup scripts/qr.sh` — the overnight stack. Say "let me use the one I built yesterday" and move on. |
 | S3 website URL 404s | deploy.sh already falls back to the Lambda URL for the QR. Explain "Block Public Access" as a security default — good teaching moment. |
-| Students' Wi-Fi blocks the site | Ask them to switch to mobile data; the URL is plain HTTPS/HTTP. |
+| Audience Wi-Fi blocks the site | Ask them to switch to mobile data; the URL is plain HTTPS/HTTP. |
 | CLI credentials broken | Console-only path: CloudFormation → Create stack → upload `infra/guestbook.yaml`; Lambda → upload `build/fn.zip`; S3 → upload `build/index.s3.html`; EC2 → Launch instance → paste `scripts/ec2-userdata.sh` in *User data*. |
 | EC2 capacity error for t3.micro | `TYPE=t2.micro scripts/ec2-demo.sh` or `TYPE=t3.small`. |
 | Bedrock says no model | Skip 2.7. Do not debug live. |
@@ -176,4 +176,4 @@ scripts/destroy.sh                      # live, at the close
 STACK=cloud101-backup scripts/destroy.sh
 scripts/ec2-cleanup.sh
 ```
-Then IAM → delete the `cloud101` access key. Share the repo link with the students.
+Then IAM → delete the `cloud101` access key. Share the repo link with the audience.

@@ -2,7 +2,7 @@
 Cloud Guestbook - the whole backend of the demo.
 GET  /        -> serves index.html (fallback if the S3 website is blocked)
 GET  /api     -> { count, entries[], region, instance, uptime_s }
-POST /api     -> { name, branch, word } -> stored in DynamoDB
+POST /api     -> { name, place, word } -> stored in DynamoDB
 This file runs on AWS Lambda: no server to install, patch, or keep running.
 """
 import base64
@@ -56,7 +56,7 @@ def handler(event, context):
             return resp(200, {
                 "count": len(items),
                 "entries": [
-                    {"name": i.get("name"), "branch": i.get("branch"),
+                    {"name": i.get("name"), "place": i.get("place"),
                      "word": i.get("word"), "ts": int(i.get("ts", 0)),
                      "instance": i.get("instance")}
                     for i in items[:60]
@@ -77,14 +77,14 @@ def handler(event, context):
             except json.JSONDecodeError:
                 return resp(400, {"error": "body must be JSON"})
             name = str(data.get("name", "")).strip()[:40]
-            branch = str(data.get("branch", "")).strip()[:30]
+            place = str(data.get("place", "")).strip()[:30]
             word = str(data.get("word", "")).strip()[:30].lower()
             if not name:
                 return resp(400, {"error": "name is required"})
             item = {
                 "id": uuid.uuid4().hex,
                 "ts": int(time.time() * 1000),
-                "name": name, "branch": branch, "word": word,
+                "name": name, "place": place, "word": word,
                 "instance": INSTANCE, "region": REGION,
             }
             ddb.put_item(Item=item)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deletes load-test entries (default) or everything (--all). Use between rehearsals.
 . "$(dirname "$0")/_common.sh"; load_env
-if [ "${1:-}" = "--all" ]; then FILTER=""; else FILTER="--filter-expression branch=:b --expression-attribute-values {\":b\":{\"S\":\"LOADTEST\"}}"; fi
+if [ "${1:-}" = "--all" ]; then FILTER=""; else FILTER="--filter-expression #p=:b --expression-attribute-names {\"#p\":\"place\"} --expression-attribute-values {\":b\":{\"S\":\"LOADTEST\"}}"; fi
 # shellcheck disable=SC2086
 IDS=$(aws dynamodb scan --table-name "$TABLE" --projection-expression id $FILTER --query 'Items[].id.S' --output text | tr '\t' '\n' | grep -v '^$' || true)
 [ -z "$IDS" ] && { ok "nothing to delete"; exit 0; }

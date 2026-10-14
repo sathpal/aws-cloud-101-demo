@@ -8,7 +8,7 @@ cat > /var/www/html/index.html <<HTML
 <body style="margin:0;background:#0f1720;color:#eef3f8;font-family:-apple-system,Segoe UI,Roboto,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh">
 <div style="max-width:720px;padding:32px">
 <div style="color:#ff9900;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase">Amazon EC2 · virtual server</div>
-<h1 style="font-size:2.4rem;margin:8px 0 20px">Hello SNIT Hyderabad 👋<br>I was born $(date -u +"%H:%M:%S UTC") today.</h1>
+<h1 style="font-size:2.4rem;margin:8px 0 20px">Hello from the cloud 👋<br>I was born $(date -u +"%H:%M:%S UTC") today.</h1>
 <table style="font-size:1.1rem;border-collapse:collapse">
 <tr><td style="color:#8fa3b8;padding:6px 18px 6px 0">Instance ID</td><td><code>$(md instance-id)</code></td></tr>
 <tr><td style="color:#8fa3b8;padding:6px 18px 6px 0">Data centre (AZ)</td><td><code>$(md placement/availability-zone)</code></td></tr>

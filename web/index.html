@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cloud Guestbook · SNIT Hyderabad</title>
+<title>Cloud Guestbook</title>
 <style>
   :root{--bg:#0f1720;--panel:#172230;--line:#27364a;--ink:#eef3f8;--muted:#8fa3b8;--accent:#ff9900;--ok:#3ddc97;--font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   *{box-sizing:border-box}
@@ -34,17 +34,15 @@
 </style>
 </head>
 <body>
-  <h1>☁️ Cloud Guestbook · SNIT Hyderabad</h1>
-  <p class="sub">This page lives in Amazon S3. Your entry travels to a Lambda function in an AWS data centre in India and is stored in DynamoDB. No server was set up for this.</p>
+  <h1>☁️ Cloud Guestbook</h1>
+  <p class="sub">This page lives in Amazon S3. Your entry travels to a Lambda function in an AWS data centre and is stored in DynamoDB. No server was set up for this.</p>
 
   <div class="card">
     <form id="f">
       <label for="name">Your name</label>
-      <input id="name" maxlength="40" placeholder="e.g. Priya" required autocomplete="off">
-      <label for="branch">Branch</label>
-      <select id="branch">
-        <option>CSE</option><option>IT</option><option>AI &amp; DS</option><option>AI &amp; ML</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option><option>Other</option>
-      </select>
+      <input id="name" maxlength="40" placeholder="e.g. Alex" required autocomplete="off">
+      <label for="place">Where are you joining from?</label>
+      <input id="place" maxlength="30" placeholder="e.g. Mumbai, or your team" autocomplete="off">
       <label for="word">One word that comes to mind when you hear "cloud"</label>
       <input id="word" maxlength="30" placeholder="e.g. storage, servers, rain…" autocomplete="off">
       <button id="go" type="submit">Send to the cloud</button>
@@ -61,7 +59,7 @@
   </div>
 
   <div class="card">
-    <strong>What "cloud" means to this room</strong>
+    <strong>What "cloud" means to this group</strong>
     <div class="chips" id="chips"><span class="chip">waiting for entries…</span></div>
   </div>
 
@@ -70,7 +68,7 @@
     <ul id="list"><li><span class="meta">nothing yet</span></li></ul>
   </div>
 
-  <footer>S3 · Lambda · DynamoDB · CloudWatch — built for the Cloud 101 session</footer>
+  <footer>S3 · Lambda · DynamoDB · CloudWatch — Cloud 101 demo</footer>
 
 <script>
   const API = "__API_BASE__" || location.origin;
@@ -92,7 +90,7 @@
       const top = Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,25);
       $("chips").innerHTML = top.length ? top.map(([w,n]) => `<span class="chip">${esc(w)} <b>${n}</b></span>`).join("") : '<span class="chip">waiting for entries…</span>';
       $("list").innerHTML = (d.entries||[]).slice(0,25).map(e =>
-        `<li><span><span class="who">${esc(e.name)}</span> <span class="meta">${esc(e.branch||"")}</span>${e.word?` · ${esc(e.word)}`:""}</span><span class="meta">${ago(e.ts)}</span></li>`
+        `<li><span><span class="who">${esc(e.name)}</span> <span class="meta">${esc(e.place||"")}</span>${e.word?` · ${esc(e.word)}`:""}</span><span class="meta">${ago(e.ts)}</span></li>`
       ).join("") || '<li><span class="meta">nothing yet</span></li>';
     }catch(e){ $("msg").textContent = "Cannot reach the API right now…"; $("msg").className = "msg err"; }
   }
@@ -103,7 +101,7 @@
     const t0 = performance.now();
     try{
       const r = await fetch(API + "/api", {method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({name:$("name").value, branch:$("branch").value, word:$("word").value})});
+        body: JSON.stringify({name:$("name").value, place:$("place").value, word:$("word").value})});
       const d = await r.json();
       if(!r.ok) throw new Error(d.error||r.status);
       const ms = Math.round(performance.now() - t0);

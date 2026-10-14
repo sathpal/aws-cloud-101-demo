@@ -1,10 +1,10 @@
-# Presenter notes · Cloud 101 · SNIT Hyderabad — AWS live demo kit
+# Presenter notes · Cloud 101 — AWS live demo kit
 
 A 30-minute live demo for a 2-hour "Introduction to Cloud Computing with AWS" session, plus the
-session runbook. Everything is designed to be created live in front of students, hit from their
+session runbook. Everything is designed to be created live in front of an audience, hit from their
 phones, and deleted live at the end ("the bill stops now").
 
-| Piece | What students see | AWS services |
+| Piece | What the audience sees | AWS services |
 |---|---|---|
 | **Cloud Guestbook** | Scan a QR, type name + branch + one word, watch the room's answers appear live, see how many "servers" AWS created | S3 static site, Lambda Function URL, DynamoDB, CloudWatch dashboard, CloudFormation |
 | **EC2 in 60 seconds** | A brand-new Linux web server in Mumbai that reports its own instance ID, data centre and IP | EC2, security group, AMI, user-data |
@@ -37,7 +37,7 @@ Read [RUNBOOK.md](RUNBOOK.md) for the minute-by-minute plan, talking points and 
    scripts/ec2-cleanup.sh     # terminate it (do this tonight — EC2 is the only thing that costs while idle)
    ```
 4. Leave the guestbook stack deployed overnight as a **backup** (idle cost ≈ ₹0). For the live show you
-   will create a second, fresh stack in front of the students.
+   will create a second, fresh stack in front of the audience.
 
 ## Script reference
 
@@ -45,7 +45,7 @@ Read [RUNBOOK.md](RUNBOOK.md) for the minute-by-minute plan, talking points and 
 |---|---|
 | `scripts/preflight.sh` | Tools, credentials, region, S3 public-access setting, default VPC, Bedrock visibility |
 | `scripts/deploy.sh` | Create/update the guestbook stack, upload code + page, print URLs. `STACK=name` picks a stack name |
-| `scripts/qr.sh [url]` | Full-screen QR page for students (defaults to the deployed guestbook) |
+| `scripts/qr.sh [url]` | Full-screen QR page for the audience (defaults to the deployed guestbook) |
 | `scripts/status.sh` | Entry count, requests / concurrency / latency in the last 10 min |
 | `scripts/blast.sh [n] [parallel]` | Load test the API (default 200 requests, 50 parallel) |
 | `scripts/reset.sh [--all]` | Delete load-test rows, or all rows |
@@ -65,6 +65,6 @@ into the EC2 launch wizard's *User data* box.
 
 ## Cost
 
-DynamoDB on-demand, Lambda, S3 and one CloudWatch dashboard for one classroom sit inside the free
+DynamoDB on-demand, Lambda, S3 and one CloudWatch dashboard for one room of people sit inside the free
 tier. `t3.micro` EC2 is free-tier eligible but is billed per second while running, so terminate it.
 Run `scripts/destroy.sh` and `scripts/ec2-cleanup.sh` after the session.

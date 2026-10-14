@@ -155,7 +155,7 @@ Default output format [None]: json
 ```
 
 `ap-south-1` is **Mumbai**. Every AWS region has a code like this. Pick whichever region is closest to you;
-the demo works in any of them. Hyderabad is `ap-south-2`, Sydney is `ap-southeast-2`, Ireland is `eu-west-1`.
+the demo works in any of them. Singapore is `ap-southeast-1`, Sydney is `ap-southeast-2`, Ireland is `eu-west-1`.
 
 ![AWS regions](docs/screenshots/aws-regions-page.png)
 
@@ -256,7 +256,7 @@ On-premises this would be a purchase order, a rack, and weeks of waiting.
 scripts/qr.sh
 ```
 
-A full-screen QR page opens. Scan it with your phone, type a name, pick a branch and a word, tap **Send to the cloud**.
+A full-screen QR page opens. Scan it with your phone, type a name, where you are joining from, and one word, tap **Send to the cloud**.
 
 ![QR page](docs/screenshots/qr-page.png)
 
@@ -329,7 +329,7 @@ Amazon Bedrock offers AI models as an API in the same account, with the same CLI
 2. Then:
 
 ```bash
-scripts/ai-demo.sh "Explain cloud computing in 3 lines, with one cricket analogy."
+scripts/ai-demo.sh "Explain cloud computing in 3 lines, with one everyday analogy."
 ```
 
 If it says no model is visible, skip this step. It is a bonus.

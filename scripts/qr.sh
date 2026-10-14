@@ -11,7 +11,7 @@ cat > "$ROOT/build/qr.html" <<E
 <div style="font-size:2.4rem;font-weight:800">Scan → Cloud Guestbook</div>
 <img src="data:image/png;base64,$B64" style="width:min(70vh,90vw);background:#fff;padding:24px;border-radius:16px">
 <div style="font-family:Menlo,monospace;font-size:1.3rem;word-break:break-all;max-width:90vw;text-align:center">$URL</div>
-<div style="color:#8fa3b8">Your phone → Amazon S3 → AWS Lambda (India) → DynamoDB</div>
+<div style="color:#8fa3b8">Your phone → Amazon S3 → AWS Lambda → DynamoDB</div>
 </body>
 E
 uvx --from qrcode qr "$URL" 2>/dev/null || true
